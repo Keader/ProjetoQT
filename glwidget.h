@@ -13,6 +13,10 @@
 #include <QTime>
 #include <QHash>
 
+extern "C" {
+    #include "glm.h"
+}
+
 class QTimer;
 
 class GLWidget : public QGLWidget {
@@ -33,7 +37,7 @@ protected:
 private:
     void drawCube();
     GLuint loadTexture(QImage image);
-    GLuint carregaModelo();
+    GLuint carregaModelo(GLMmodel* modelo);
     float _angle = 0.0;
     QTimer *timer;
     QTime time;
