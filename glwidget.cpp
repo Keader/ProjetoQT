@@ -121,7 +121,7 @@ void GLWidget::paintGL() {
         glBindTexture(GL_TEXTURE_2D, _textureCenter);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTranslatef(0,1.2,-8);
+        glTranslatef(0,1.1,-8);
         // Deixa o objeto posicionado de frente
         glRotatef(-90, 1, 0, 0.0);
         // Faz a rotacao pelos botoes
@@ -139,7 +139,7 @@ void GLWidget::paintGL() {
         glEnable(GL_LIGHTING);
         glTranslatef(0,2.2,-6);
         // Deixa o objeto posicionado de frente
-        glRotatef(-100, 1, 0, 0.0);
+        glRotatef(-80, 1, 0, 0.0);
         glRotatef(_angle, 0, 0, 1.0);
         carregaModelo(botaoAzul);
         glDisable(GL_LIGHTING);
@@ -150,7 +150,7 @@ void GLWidget::paintGL() {
         glEnable(GL_LIGHTING);
         glTranslatef(0,-0.4,-6);
         // Deixa o objeto posicionado de frente
-        glRotatef(-100, 1, 0, 0.0);
+        glRotatef(-80, 1, 0, 0.0);
         glRotatef(_angle, 0, 0, 1.0);
         carregaModelo(botaoVerde);
         glDisable(GL_LIGHTING);
