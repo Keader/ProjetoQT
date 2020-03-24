@@ -17,10 +17,13 @@
 GLMmodel* cilindro = nullptr;
 GLMmodel* botaoAzul = nullptr;
 GLMmodel* botaoVerde = nullptr;
+GLMmodel* botaoAmarelo = nullptr;
+GLMmodel* botaoVermelho = nullptr;
+GLMmodel* centro = nullptr;
 
 // Constructor
 GLWidget::GLWidget() {
-    setWindowTitle("Avião");
+    setWindowTitle("Genius 3D");
     time = QTime::currentTime();
     timer = new QTimer(this);
     timer->setSingleShot(true);
@@ -66,9 +69,15 @@ void GLWidget::initializeGL() {
     if (!cilindro)
         cilindro = glmReadOBJ("modelos/cilindro.obj");
     if (!botaoAzul)
-        botaoAzul = glmReadOBJ("modelos/azul.obj");
+        botaoAzul = glmReadOBJ("modelos/azul_claro.obj");
     if (!botaoVerde)
-        botaoVerde = glmReadOBJ("modelos/verde.obj");
+        botaoVerde = glmReadOBJ("modelos/verde_claro.obj");
+    if (!botaoAmarelo)
+        botaoAmarelo = glmReadOBJ("modelos/amarelo_claro.obj");
+    if (!botaoVermelho)
+        botaoVermelho = glmReadOBJ("modelos/vermelho_claro.obj");
+    if (!centro)
+        centro = glmReadOBJ("modelos/centro.obj");
 }
 
 // This is called when the OpenGL window is resized
@@ -84,6 +93,8 @@ void GLWidget::resizeGL(int width, int height) {
 
 // OpenGL painting code goes here
 void GLWidget::paintGL() {
+
+    qDebug() << _angle;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Sky
@@ -129,7 +140,7 @@ void GLWidget::paintGL() {
         // glRotatef(_angle, 1, 0, 0.0); rotacao em X
         // glRotatef(_angle, 0, 0, 1.0); rotacao em Y
         glRotatef(_angle, 0, 0, 1.0);
-         glScalef(2.5, 5, 2.5);
+        glScalef(2.5, 5, 2.5);
         carregaModelo(cilindro);
         glDisable(GL_LIGHTING);
     glPopMatrix();
@@ -156,6 +167,76 @@ void GLWidget::paintGL() {
         glDisable(GL_LIGHTING);
     glPopMatrix();
 
+    // Giro pra esquerda
+    if (_angle < 0 && (_angle >= -30 || _angle < -290))
+    {
+        //Carrega o Modelo do botao amarelo (esquerda)
+        glPushMatrix();
+            glEnable(GL_LIGHTING);
+            glTranslatef(-1.2,0.85,-6);
+            // Deixa o objeto posicionado de frente
+            glRotatef(-80, 1, 0, 0.0);
+            glRotatef(_angle, 0, 0, 1.0);
+            carregaModelo(botaoAmarelo);
+            glDisable(GL_LIGHTING);
+        glPopMatrix();
+    }
+    else if (_angle >= 0 && (_angle < 50 || _angle > 310))
+    {
+        //Carrega o Modelo do botao amarelo (esquerda)
+        glPushMatrix();
+            glEnable(GL_LIGHTING);
+            glTranslatef(-1.2,0.85,-6);
+            // Deixa o objeto posicionado de frente
+            glRotatef(-80, 1, 0, 0.0);
+            glRotatef(_angle, 0, 0, 1.0);
+            carregaModelo(botaoAmarelo);
+            glDisable(GL_LIGHTING);
+        glPopMatrix();
+    }
+
+    // Giro pra esquerda
+    if (_angle < 0 && (_angle >= -40 || _angle < -320))
+    {
+        //Carrega o Modelo do botao vermelho (direita)
+        glPushMatrix();
+            glEnable(GL_LIGHTING);
+            glTranslatef(1.2,0.85,-6);
+            // Deixa o objeto posicionado de frente
+            glRotatef(-80, 1, 0, 0.0);
+            glRotatef(_angle, 0, 0, 1.0);
+            carregaModelo(botaoVermelho);
+            glDisable(GL_LIGHTING);
+        glPopMatrix();
+    }
+    // Giro pra direita
+    else if (_angle >= 0 && (_angle < 40 || _angle > 290))
+    {
+
+        //Carrega o Modelo do botao vermelho (direita)
+        glPushMatrix();
+            glEnable(GL_LIGHTING);
+            glTranslatef(1.2,0.85,-6);
+            // Deixa o objeto posicionado de frente
+            glRotatef(-80, 1, 0, 0.0);
+            glRotatef(_angle, 0, 0, 1.0);
+            carregaModelo(botaoVermelho);
+            glDisable(GL_LIGHTING);
+         glPopMatrix();
+    }
+
+    //Carrega o Modelo do centro
+    glPushMatrix();
+        glEnable(GL_LIGHTING);
+        glTranslatef(0,0.8,-6);
+        // Deixa o objeto posicionado de frente
+        glRotatef(-80, 1, 0, 0.0);
+        glRotatef(_angle, 0, 0, 1.0);
+        glScalef(0.5, 0.5, 0.5);
+        carregaModelo(centro);
+        glDisable(GL_LIGHTING);
+    glPopMatrix();
+
 
     // Framerate control
     int delay = time.msecsTo(QTime::currentTime());
@@ -176,7 +257,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event) {
         break;
     case Qt::Key_1:
         _angle -= 10;
-        if (_angle > 360)
+        if (_angle < -360)
             _angle = 0.0;
         break;
     case Qt::Key_2:
