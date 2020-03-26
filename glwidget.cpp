@@ -145,27 +145,59 @@ void GLWidget::paintGL() {
         glDisable(GL_LIGHTING);
     glPopMatrix();
 
-    //Carrega o Modelo do botao azul (cima)
-    glPushMatrix();
-        glEnable(GL_LIGHTING);
-        glTranslatef(0,2.2,-6);
-        // Deixa o objeto posicionado de frente
-        glRotatef(-80, 1, 0, 0.0);
-        glRotatef(_angle, 0, 0, 1.0);
-        carregaModelo(botaoAzul);
-        glDisable(GL_LIGHTING);
-    glPopMatrix();
+    if (_angle < 0 && (_angle >= -80 || _angle < -280))
+    {
+        //Carrega o Modelo do botao azul (cima)
+        glPushMatrix();
+            glEnable(GL_LIGHTING);
+            glTranslatef(0,2.2,-6);
+            // Deixa o objeto posicionado de frente
+            glRotatef(-80, 1, 0, 0.0);
+            glRotatef(_angle, 0, 0, 1.0);
+            carregaModelo(botaoAzul);
+            glDisable(GL_LIGHTING);
+        glPopMatrix();
+    }
+    else if (_angle >= 0  && (_angle <= 80 || _angle > 280))
+    {
+        //Carrega o Modelo do botao azul (cima)
+        glPushMatrix();
+            glEnable(GL_LIGHTING);
+            glTranslatef(0,2.2,-6);
+            // Deixa o objeto posicionado de frente
+            glRotatef(-80, 1, 0, 0.0);
+            glRotatef(_angle, 0, 0, 1.0);
+            carregaModelo(botaoAzul);
+            glDisable(GL_LIGHTING);
+        glPopMatrix();
+    }
 
-    //Carrega o Modelo do botao verde (baixo)
-    glPushMatrix();
-        glEnable(GL_LIGHTING);
-        glTranslatef(0,-0.4,-6);
-        // Deixa o objeto posicionado de frente
-        glRotatef(-80, 1, 0, 0.0);
-        glRotatef(_angle, 0, 0, 1.0);
-        carregaModelo(botaoVerde);
-        glDisable(GL_LIGHTING);
-    glPopMatrix();
+    if (_angle < 0 && (_angle >= -80 || _angle < -280))
+    {
+        //Carrega o Modelo do botao verde (baixo)
+        glPushMatrix();
+            glEnable(GL_LIGHTING);
+            glTranslatef(0,-0.4,-6);
+            // Deixa o objeto posicionado de frente
+            glRotatef(-80, 1, 0, 0.0);
+            glRotatef(_angle, 0, 0, 1.0);
+            carregaModelo(botaoVerde);
+            glDisable(GL_LIGHTING);
+        glPopMatrix();
+    }
+    else if (_angle >= 0  && (_angle <= 80 || _angle > 280))
+    {
+        //Carrega o Modelo do botao verde (baixo)
+        glPushMatrix();
+            glEnable(GL_LIGHTING);
+            glTranslatef(0,-0.4,-6);
+            // Deixa o objeto posicionado de frente
+            glRotatef(-80, 1, 0, 0.0);
+            glRotatef(_angle, 0, 0, 1.0);
+            carregaModelo(botaoVerde);
+            glDisable(GL_LIGHTING);
+        glPopMatrix();
+    }
 
     // Giro pra esquerda
     if (_angle < 0 && (_angle >= -30 || _angle < -290))
@@ -225,17 +257,34 @@ void GLWidget::paintGL() {
          glPopMatrix();
     }
 
-    //Carrega o Modelo do centro
-    glPushMatrix();
-        glEnable(GL_LIGHTING);
-        glTranslatef(0,0.8,-6);
-        // Deixa o objeto posicionado de frente
-        glRotatef(-80, 1, 0, 0.0);
-        glRotatef(_angle, 0, 0, 1.0);
-        glScalef(0.5, 0.5, 0.5);
-        carregaModelo(centro);
-        glDisable(GL_LIGHTING);
-    glPopMatrix();
+    if (_angle < 0 && (_angle >= -80 || _angle < -280))
+    {
+        //Carrega o Modelo do centro
+        glPushMatrix();
+            glEnable(GL_LIGHTING);
+            glTranslatef(0,0.8,-6);
+            // Deixa o objeto posicionado de frente
+            glRotatef(-80, 1, 0, 0.0);
+            glRotatef(_angle, 0, 0, 1.0);
+            glScalef(0.5, 0.5, 0.5);
+            carregaModelo(centro);
+            glDisable(GL_LIGHTING);
+        glPopMatrix();
+    }
+    else if (_angle >= 0  && (_angle <= 80 || _angle > 280))
+    {
+        //Carrega o Modelo do centro
+        glPushMatrix();
+            glEnable(GL_LIGHTING);
+            glTranslatef(0,0.8,-6);
+            // Deixa o objeto posicionado de frente
+            glRotatef(-80, 1, 0, 0.0);
+            glRotatef(_angle, 0, 0, 1.0);
+            glScalef(0.5, 0.5, 0.5);
+            carregaModelo(centro);
+            glDisable(GL_LIGHTING);
+        glPopMatrix();
+    }
 
 
     // Framerate control
