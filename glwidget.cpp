@@ -16,6 +16,8 @@
 #include <chrono>
 #include <thread>
 #include "timercpp.h"
+#include <QMessageBox>
+#include <QRandomGenerator>
 
 enum Botoes
 {
@@ -306,7 +308,6 @@ void GLWidget::paintGL() {
         glPopMatrix();
     }
 
-
     // Framerate control
     int delay = time.msecsTo(QTime::currentTime());
     if (delay == 0)
@@ -325,15 +326,10 @@ void GLWidget::keyPressEvent(QKeyEvent *event) {
         setWindowState(windowState() ^ Qt::WindowFullScreen); // Toggle fullscreen on F1
         break;
     case Qt::Key_1:
-    {
-        _audio.setSource(QUrl::fromLocalFile("sounds/green.wav"));
-        _audio.play();
         _angle -= 10;
         if (_angle < -360)
             _angle = 0.0;
-        setWindowTitle(windowTitle() + QString::number(_angle));
         break;
-    }
     case Qt::Key_2:
         _angle += 10;
         if (_angle > 360)
@@ -346,11 +342,66 @@ void GLWidget::keyPressEvent(QKeyEvent *event) {
     case Qt::Key_Up:
     case Qt::Key_Right:
     case Qt::Key_Down:
-        // Lidar com os comandos aqui
+        if (!_isAllowedCommands)
+            return;
+
+        HandlePlayerCommand(event->key());
         break;
     default:
         QGLWidget::keyPressEvent(event); // Let base class handle the other keys
     }
+}
+
+void GLWidget::HandlePlayerCommand(int key)
+{
+    int valor = 0;
+    if (key == Qt::Key_Left)
+        valor = BOTAO_AMARELO;
+    else if (key == Qt::Key_Right)
+        valor = BOTAO_VERMELHO;
+    else if (key == Qt::Key_Up)
+        valor = BOTAO_AZUL;
+    else if (key == Qt::Key_Down)
+        valor = BOTAO_VERDE;
+
+    // Handle animation
+    _buttonIsOn[valor] = true;
+    t.setTimeout([&, valor]()
+    {
+        _buttonIsOn[valor] = false;
+        ChecaResultado();
+    }, 800);
+
+    _playerChoices.push_back(valor);
+    SelecionaMusicaCorreta(valor);
+    _audio.play();
+}
+
+void GLWidget::ChecaResultado()
+{
+    if (_playerChoices[m_currentPlayerGuess] == _gameValues[m_currentPlayerGuess])
+    {
+        // Checa se ja verificou todas as escolhas
+        if (_playerChoices.size() ==  _gameValues.size())
+        {
+            _isAllowedCommands = false;
+            _playerChoices.clear();
+            _gameValues.clear();
+            _level++;
+            m_currentPlayerGuess = 0;
+            setWindowTitle("Nivel: " + QString::number(_level));
+            t.setTimeout([&]()
+            {
+                LogicaDoLevel();
+            }, 1000);
+            return;
+        }
+
+        // Ainda faltam respostas, entao aguarda o proximo comando
+        ++m_currentPlayerGuess;
+    }
+    else
+        InicializaJogo();
 }
 
 void GLWidget::InicializaJogo()
@@ -368,12 +419,17 @@ void GLWidget::LogicaDoLevel()
 {
     for (int i = 0; i < _level; ++i)
     {
-        int currentVal = static_cast<int>(std::rand() % 4);
-        qDebug() << "sorteado o valor: " << currentVal;
+        int currentVal = QRandomGenerator::global()->bounded(0, 4);
         t.setTimeout([&, currentVal]()
         {
             LidaComBotaoAnimacao(currentVal);
-        }, _level * 700);
+        }, i * 1000);
+
+        // Libera os comandos do usuario, 100 ms apos o ultimo botao fazer animacao
+        t.setTimeout([&]()
+        {
+            _isAllowedCommands = true;
+        }, _level * 1050);
     }
 }
 
@@ -384,7 +440,7 @@ void GLWidget::LidaComBotaoAnimacao(int valor)
     t.setTimeout([&, valor]()
     {
          _buttonIsOn[valor] = false;
-    }, 500);
+    }, 800);
     SelecionaMusicaCorreta(valor);
     _audio.play();
 }

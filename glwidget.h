@@ -39,6 +39,8 @@ protected:
     void InicializaJogo();
     void LogicaDoLevel();
     void SelecionaMusicaCorreta(int botaoIndex);
+    void HandlePlayerCommand(int key);
+    void ChecaResultado();
 
 private:
     void drawCube();

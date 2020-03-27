@@ -1,5 +1,6 @@
 QT += opengl
 QT += multimedia
+QT += core
 
 TARGET = AbreModelo
 
