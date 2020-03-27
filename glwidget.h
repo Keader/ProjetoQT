@@ -12,6 +12,9 @@
 #include <QGLWidget>
 #include <QTime>
 #include <QHash>
+#include <QLabel>
+#include <QFrame>
+#include <QSoundEffect>
 
 extern "C" {
     #include "glm.h"
@@ -33,9 +36,13 @@ protected:
     void keyPressEvent(QKeyEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void changeEvent(QEvent *event);
+    void InicializaJogo();
+    void LogicaDoLevel();
+    void SelecionaMusicaCorreta(int botaoIndex);
 
 private:
     void drawCube();
+    void LidaComBotaoAnimacao(int valor);
     GLuint loadTexture(QImage image);
     GLuint carregaModelo(GLMmodel* modelo);
     float _angle = 0.0;
@@ -50,6 +57,14 @@ private:
 
     GLuint  _textureGrass,
             _textureSky, _textureCenter;
+    std::vector<int> _playerChoices;
+    std::vector<int> _gameValues;
+    int _level = 1;
+    int m_currentPlayerGuess = 0;
+    QSoundEffect _audio;
+    bool _isAllowedCommands = true;
+    std::vector<bool> _buttonIsOn;
+
 };
 
 #endif // GLWIDGET_H

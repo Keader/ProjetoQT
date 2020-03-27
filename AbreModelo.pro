@@ -1,4 +1,5 @@
 QT += opengl
+QT += multimedia
 
 TARGET = AbreModelo
 
@@ -10,7 +11,8 @@ SOURCES +=  main.cpp \
 
 HEADERS +=  glwidget.h \
             materials.h \
-            glm.h
+            glm.h \
+            timercpp.h
 
 RESOURCES += res.qrc
 

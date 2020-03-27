@@ -13,17 +13,34 @@
 #include <QKeyEvent>
 #include <QTimer>
 #include <QDebug>
+#include <chrono>
+#include <thread>
+#include "timercpp.h"
+
+enum Botoes
+{
+    BOTAO_AZUL     = 0,
+    BOTAO_VERMELHO = 1,
+    BOTAO_VERDE    = 2,
+    BOTAO_AMARELO  = 3,
+    MAX_BOTOES
+};
 
 GLMmodel* cilindro = nullptr;
 GLMmodel* botaoAzul = nullptr;
 GLMmodel* botaoVerde = nullptr;
 GLMmodel* botaoAmarelo = nullptr;
 GLMmodel* botaoVermelho = nullptr;
+GLMmodel* botaoAzul_on = nullptr;
+GLMmodel* botaoVerde_on = nullptr;
+GLMmodel* botaoAmarelo_on = nullptr;
+GLMmodel* botaoVermelho_on = nullptr;
 GLMmodel* centro = nullptr;
+Timer t = Timer();
 
 // Constructor
 GLWidget::GLWidget() {
-    setWindowTitle("Genius 3D");
+    setWindowTitle("Genius 3D - Aperte o botão '3' para iniciar o jogo.");
     time = QTime::currentTime();
     timer = new QTimer(this);
     timer->setSingleShot(true);
@@ -48,7 +65,7 @@ void GLWidget::initializeGL() {
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Really nice perspective calculations
 
 
-//    glClearColor(0.0, 0.0, 0.0, 1.0);
+//   glClearColor(0.0, 0.0, 0.0, 1.0);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
@@ -65,19 +82,21 @@ void GLWidget::initializeGL() {
     _textureSky = loadTexture(img);
     img = convertToGLFormat(QImage("modelos/centro/concrete.jpg"));
     _textureCenter = loadTexture(img);
-    //Isso devera sair daqui, por enquanto os objetos ainda nao mudam
-    if (!cilindro)
-        cilindro = glmReadOBJ("modelos/cilindro.obj");
-    if (!botaoAzul)
-        botaoAzul = glmReadOBJ("modelos/azul_claro.obj");
-    if (!botaoVerde)
-        botaoVerde = glmReadOBJ("modelos/verde_claro.obj");
-    if (!botaoAmarelo)
-        botaoAmarelo = glmReadOBJ("modelos/amarelo_claro.obj");
-    if (!botaoVermelho)
-        botaoVermelho = glmReadOBJ("modelos/vermelho_claro.obj");
-    if (!centro)
-        centro = glmReadOBJ("modelos/centro.obj");
+    for (int i = 0; i < MAX_BOTOES; ++i)
+        _buttonIsOn.push_back(false);
+
+
+    cilindro = glmReadOBJ("modelos/cilindro.obj");
+    centro = glmReadOBJ("modelos/centro.obj");
+
+    botaoAzul =  glmReadOBJ("modelos/azul.obj");
+    botaoVerde = glmReadOBJ("modelos/verde.obj");
+    botaoAmarelo = glmReadOBJ("modelos/amarelo.obj");
+    botaoVermelho = glmReadOBJ("modelos/vermelho.obj");
+    botaoAzul_on = glmReadOBJ("modelos/azul_claro.obj");
+    botaoVerde_on = glmReadOBJ("modelos/verde_claro.obj");
+    botaoAmarelo_on = glmReadOBJ("modelos/amarelo_claro.obj");
+    botaoVermelho_on = glmReadOBJ("modelos/vermelho_claro.obj");
 }
 
 // This is called when the OpenGL window is resized
@@ -94,7 +113,8 @@ void GLWidget::resizeGL(int width, int height) {
 // OpenGL painting code goes here
 void GLWidget::paintGL() {
 
-    qDebug() << _angle;
+    // Verifica qual modelo de botao sera carregado
+    //qDebug() << _angle;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Sky
@@ -154,7 +174,7 @@ void GLWidget::paintGL() {
             // Deixa o objeto posicionado de frente
             glRotatef(-80, 1, 0, 0.0);
             glRotatef(_angle, 0, 0, 1.0);
-            carregaModelo(botaoAzul);
+            carregaModelo(_buttonIsOn[BOTAO_AZUL] ? botaoAzul_on : botaoAzul);
             glDisable(GL_LIGHTING);
         glPopMatrix();
     }
@@ -167,7 +187,7 @@ void GLWidget::paintGL() {
             // Deixa o objeto posicionado de frente
             glRotatef(-80, 1, 0, 0.0);
             glRotatef(_angle, 0, 0, 1.0);
-            carregaModelo(botaoAzul);
+            carregaModelo(_buttonIsOn[BOTAO_AZUL] ? botaoAzul_on : botaoAzul);
             glDisable(GL_LIGHTING);
         glPopMatrix();
     }
@@ -181,7 +201,7 @@ void GLWidget::paintGL() {
             // Deixa o objeto posicionado de frente
             glRotatef(-80, 1, 0, 0.0);
             glRotatef(_angle, 0, 0, 1.0);
-            carregaModelo(botaoVerde);
+            carregaModelo(_buttonIsOn[BOTAO_VERDE] ? botaoVerde_on : botaoVerde);
             glDisable(GL_LIGHTING);
         glPopMatrix();
     }
@@ -194,7 +214,7 @@ void GLWidget::paintGL() {
             // Deixa o objeto posicionado de frente
             glRotatef(-80, 1, 0, 0.0);
             glRotatef(_angle, 0, 0, 1.0);
-            carregaModelo(botaoVerde);
+            carregaModelo(_buttonIsOn[BOTAO_VERDE] ? botaoVerde_on : botaoVerde);
             glDisable(GL_LIGHTING);
         glPopMatrix();
     }
@@ -209,7 +229,7 @@ void GLWidget::paintGL() {
             // Deixa o objeto posicionado de frente
             glRotatef(-80, 1, 0, 0.0);
             glRotatef(_angle, 0, 0, 1.0);
-            carregaModelo(botaoAmarelo);
+            carregaModelo(_buttonIsOn[BOTAO_AMARELO] ? botaoAmarelo_on : botaoAmarelo);
             glDisable(GL_LIGHTING);
         glPopMatrix();
     }
@@ -222,7 +242,7 @@ void GLWidget::paintGL() {
             // Deixa o objeto posicionado de frente
             glRotatef(-80, 1, 0, 0.0);
             glRotatef(_angle, 0, 0, 1.0);
-            carregaModelo(botaoAmarelo);
+            carregaModelo(_buttonIsOn[BOTAO_AMARELO] ? botaoAmarelo_on : botaoAmarelo);
             glDisable(GL_LIGHTING);
         glPopMatrix();
     }
@@ -237,7 +257,7 @@ void GLWidget::paintGL() {
             // Deixa o objeto posicionado de frente
             glRotatef(-80, 1, 0, 0.0);
             glRotatef(_angle, 0, 0, 1.0);
-            carregaModelo(botaoVermelho);
+            carregaModelo(_buttonIsOn[BOTAO_VERMELHO] ? botaoVermelho_on : botaoVermelho);
             glDisable(GL_LIGHTING);
         glPopMatrix();
     }
@@ -252,7 +272,7 @@ void GLWidget::paintGL() {
             // Deixa o objeto posicionado de frente
             glRotatef(-80, 1, 0, 0.0);
             glRotatef(_angle, 0, 0, 1.0);
-            carregaModelo(botaoVermelho);
+            carregaModelo(_buttonIsOn[BOTAO_VERMELHO] ? botaoVermelho_on : botaoVermelho);
             glDisable(GL_LIGHTING);
          glPopMatrix();
     }
@@ -305,14 +325,22 @@ void GLWidget::keyPressEvent(QKeyEvent *event) {
         setWindowState(windowState() ^ Qt::WindowFullScreen); // Toggle fullscreen on F1
         break;
     case Qt::Key_1:
+    {
+        _audio.setSource(QUrl::fromLocalFile("sounds/green.wav"));
+        _audio.play();
         _angle -= 10;
         if (_angle < -360)
             _angle = 0.0;
+        setWindowTitle(windowTitle() + QString::number(_angle));
         break;
+    }
     case Qt::Key_2:
         _angle += 10;
         if (_angle > 360)
             _angle = 0.0;
+        break;
+    case Qt::Key_3:
+        InicializaJogo();
         break;
     case Qt::Key_Left:
     case Qt::Key_Up:
@@ -325,9 +353,66 @@ void GLWidget::keyPressEvent(QKeyEvent *event) {
     }
 }
 
+void GLWidget::InicializaJogo()
+{
+    _level = 1;
+    setWindowTitle("Nivel: " + QString::number(_level));
+    _playerChoices.clear();
+    _gameValues.clear();
+    m_currentPlayerGuess = 0;
+    _isAllowedCommands = false;
+    LogicaDoLevel();
+}
+
+void GLWidget::LogicaDoLevel()
+{
+    for (int i = 0; i < _level; ++i)
+    {
+        int currentVal = static_cast<int>(std::rand() % 4);
+        qDebug() << "sorteado o valor: " << currentVal;
+        t.setTimeout([&, currentVal]()
+        {
+            LidaComBotaoAnimacao(currentVal);
+        }, _level * 700);
+    }
+}
+
+void GLWidget::LidaComBotaoAnimacao(int valor)
+{
+    _gameValues.push_back(valor);
+    _buttonIsOn[valor] = true;
+    t.setTimeout([&, valor]()
+    {
+         _buttonIsOn[valor] = false;
+    }, 500);
+    SelecionaMusicaCorreta(valor);
+    _audio.play();
+}
+
+void GLWidget::SelecionaMusicaCorreta(int valor)
+{
+    switch(valor)
+    {
+        case BOTAO_AZUL:
+            _audio.setSource(QUrl::fromLocalFile("sounds/blue.wav"));
+        break;
+        case BOTAO_VERDE:
+            _audio.setSource(QUrl::fromLocalFile("sounds/green.wav"));
+            break;
+        case BOTAO_VERMELHO:
+            _audio.setSource(QUrl::fromLocalFile("sounds/red.wav"));
+            break;
+        case BOTAO_AMARELO:
+            _audio.setSource(QUrl::fromLocalFile("sounds/yellow.wav"));
+            break;
+        default:
+            break;
+    }
+}
+
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
-    qDebug() << "Chamado com as posicoes: " << event->pos();
+    //qDebug() << "Chamado com as posicoes: " << event->pos();
     QGLWidget::mouseMoveEvent(event);
 }
 
